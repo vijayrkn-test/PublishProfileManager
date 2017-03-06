@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using PublishProfileContracts;
@@ -30,7 +31,7 @@ namespace PublishProfileManager
         }
 
 
-        public static string CreateMSDeployPublishProfileFromPublishSettings(string publishSettingsContents)
+        public static KeyValuePair<string, string> CreateMSDeployPublishProfileFromPublishSettings(string publishSettingsContents)
         {
             using (XmlTextReader reader = new XmlTextReader(new StringReader(publishSettingsContents)))
             {
@@ -59,15 +60,16 @@ namespace PublishProfileManager
                             UserName = profileNode.Attributes["userName"]?.Value
                         };
 
-                        return msDeployPublishProfile.ToString();
+						string profileName = profileNode.Attributes["profileName"]?.Value ?? "msDeployProfile";
+						return new KeyValuePair<string, string>(profileName, msDeployPublishProfile.ToString());
                     }
                 }
             }
 
-            return null;
+			return new KeyValuePair<string, string>();
         }
 
-        public static string CreateUserPublishProfileFromPublishSettings(string publishSettingsContents)
+        public static KeyValuePair<string, string> CreateUserPublishProfileFromPublishSettings(string publishSettingsContents)
         {
             using (XmlTextReader reader = new XmlTextReader(new StringReader(publishSettingsContents)))
             {
@@ -92,12 +94,13 @@ namespace PublishProfileManager
                             EncryptedPassword = Convert.ToBase64String(protectedPassword)
                         };
 
-                        return userPublishProfile.ToString();
+						string profileName = profileNode.Attributes["profileName"]?.Value ?? "msDeployProfile";
+						return new KeyValuePair<string, string>(profileName, userPublishProfile.ToString());
                     }
                 }
             }
 
-            return null;
+			return new KeyValuePair<string, string>();
         }
     }
 }
